@@ -200,33 +200,59 @@ function App() {
     setInputValue('');
     setIsLoading(true);
 
-    // Simulate API delay for realistic experience
-    setTimeout(() => {
-      try {
-        const botResponse = getMockResponse(messageText);
+    try {
+      const response = await fetch('http://localhost:3001/query', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ query: messageText }),
+      });
 
-        const botMessage: Message = {
-          id: Date.now() + 1,
-          text: botResponse.answer,
-          isUser: false,
-          timestamp: new Date(),
-          response: botResponse
-        };
-
-        setMessages(prev => [...prev, botMessage]);
-      } catch (error) {
-        console.error('Error processing message:', error);
-        const errorMessage: Message = {
-          id: Date.now() + 1,
-          text: "I apologize, but I'm having trouble processing your request right now. Please try again in a moment.",
-          isUser: false,
-          timestamp: new Date()
-        };
-        setMessages(prev => [...prev, errorMessage]);
-      } finally {
-        setIsLoading(false);
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`HTTP error! status: ${response.status}. Response: ${errorText}`);
       }
-    }, 1000 + Math.random() * 1000); // Random delay between 1-2 seconds
+
+      const data = await response.text();
+      let botResponse: BotResponse;
+
+      try {
+        const jsonResponse = JSON.parse(data);
+        if (jsonResponse.response) {
+          botResponse = jsonResponse.response;
+        } else {
+          botResponse = { answer: data };
+        }
+      } catch (parseError) {
+        botResponse = { answer: data };
+      }
+
+      const botMessage: Message = {
+        id: Date.now() + 1,
+        text: botResponse.answer || "Sorry, I couldn't process your request.",
+        isUser: false,
+        timestamp: new Date(),
+        response: botResponse
+      };
+
+      setMessages(prev => [...prev, botMessage]);
+    } catch (error) {
+      console.error('Error sending message:', error);
+
+      // Use fallback response when backend is unavailable
+      const fallbackResponse = getFallbackResponse(messageText);
+      const errorMessage: Message = {
+        id: Date.now() + 1,
+        text: fallbackResponse.answer,
+        isUser: false,
+        timestamp: new Date(),
+        response: fallbackResponse
+      };
+      setMessages(prev => [...prev, errorMessage]);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleSuggestionClick = (suggestion: string) => {
