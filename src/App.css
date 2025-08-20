@@ -13,7 +13,7 @@
         .chat-history-container {
           flex-grow: 1;
           padding-top: 2rem;
-          padding-bottom: 2rem;
+          padding-bottom: 140px;
           display: flex;
           flex-direction: column;
           gap: 1.5rem;
@@ -26,6 +26,8 @@
           opacity: 0;
           transform: translateY(30px);
           transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.6s;
+          min-height: calc(100vh - 200px);
+          box-sizing: border-box;
         }
 
         .app-container.chat-mode .chat-history-container {
@@ -382,12 +384,13 @@
           opacity: 1;
           transform: translateY(0);
           transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-          padding-bottom: 120px;
+          padding-bottom: 0;
           overflow-y: auto;
           overflow-x: hidden;
-          min-height: calc(100vh - 140px);
+          height: calc(100vh - 140px);
           position: relative;
           z-index: 1;
+          scroll-behavior: smooth;
         }
 
         .chat-content.entering {
@@ -410,7 +413,7 @@
           bottom: 0;
           left: 0;
           right: 0;
-          width: 100vw;
+          width: 100%;
           background: rgba(255, 255, 255, 0.95);
           backdrop-filter: blur(20px);
           -webkit-backdrop-filter: blur(20px);
@@ -420,9 +423,10 @@
           transform: translateY(100%);
           transition: all 1.0s cubic-bezier(0.4, 0, 0.2, 1);
           box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.12), 0 -4px 16px rgba(0, 0, 0, 0.08);
-          min-height: 80px;
+          height: 100px;
           display: flex;
           align-items: center;
+          justify-content: center;
         }
 
         .app-container.chat-mode .chat-input-fixed {
