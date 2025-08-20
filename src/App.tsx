@@ -153,106 +153,14 @@ function App() {
     }
   ];
 
-  // Mock API responses for demo purposes
-  const getMockResponse = (query: string): BotResponse => {
-    const lowerQuery = query.toLowerCase();
-
-    if (lowerQuery.includes('founder') || lowerQuery.includes('ceo')) {
-      return {
-        answer: "**Hutech Solutions** was founded by **John Smith** who serves as our CEO. He has over 15 years of experience in technology solutions and has led the company to become a leading provider of enterprise software solutions.\n\nUnder his leadership, Hutech has grown from a small startup to a company serving over 500+ clients worldwide.",
-        recommendations: [
-          "What is the company's mission?",
-          "Tell me about the leadership team",
-          "What are our core values?"
-        ]
-      };
-    }
-
-    if (lowerQuery.includes('office') || lowerQuery.includes('location')) {
-      return {
-        answer: "🏢 **Hutech Solutions Offices:**\n\n📍 **Headquarters:** San Francisco, CA\n- 123 Tech Street, Suite 500\n- San Francisco, CA 94105\n\n📍 **Development Center:** Austin, TX\n- 456 Innovation Blvd\n- Austin, TX 78701\n\n📍 **International Office:** London, UK\n- 789 Tech Hub Lane\n- London, EC2A 4BX",
-        recommendations: [
-          "How can I visit your offices?",
-          "Do you have remote work options?",
-          "What are your office hours?"
-        ]
-      };
-    }
-
-    if (lowerQuery.includes('service') || lowerQuery.includes('what do')) {
-      return {
-        answer: "🚀 **Our Core Services:**\n\n**1. Custom Software Development**\n- Web Applications\n- Mobile Apps (iOS & Android)\n- Enterprise Solutions\n\n**2. Cloud Solutions**\n- AWS & Azure Migration\n- DevOps & CI/CD\n- Microservices Architecture\n\n**3. AI & Machine Learning**\n- Data Analytics\n- Predictive Modeling\n- Natural Language Processing\n\n**4. Consulting & Strategy**\n- Digital Transformation\n- Technology Roadmapping\n- Architecture Design",
-        recommendations: [
-          "What technologies do you use?",
-          "Can you show me case studies?",
-          "What industries do you serve?"
-        ]
-      };
-    }
-
-    if (lowerQuery.includes('industrie') || lowerQuery.includes('sector')) {
-      return {
-        answer: "🏭 **Industries We Serve:**\n\n**Healthcare & Life Sciences**\n- Electronic Health Records\n- Telemedicine Platforms\n- Medical Device Integration\n\n**Financial Services**\n- Banking Solutions\n- Fintech Applications\n- Payment Processing\n\n**E-commerce & Retail**\n- Online Marketplaces\n- Inventory Management\n- Customer Analytics\n\n**Manufacturing**\n- IoT Solutions\n- Supply Chain Management\n- Quality Control Systems",
-        recommendations: [
-          "Do you have healthcare expertise?",
-          "What fintech solutions do you offer?",
-          "Can you help with IoT projects?"
-        ]
-      };
-    }
-
-    if (lowerQuery.includes('stat') || lowerQuery.includes('impressive')) {
-      return {
-        answer: "📊 **Impressive Hutech Statistics:**\n\n🎯 **500+** Successful Projects Delivered\n👥 **200+** Expert Developers & Consultants\n🌍 **50+** Countries Served\n⭐ **98%** Client Satisfaction Rate\n🏆 **15** Industry Awards Won\n💰 **$50M+** In Client Cost Savings\n⚡ **99.9%** System Uptime Achieved\n🚀 **24/7** Global Support Coverage",
-        recommendations: [
-          "What awards have you won?",
-          "Can you share client testimonials?",
-          "What is your project success rate?"
-        ]
-      };
-    }
-
-    if (lowerQuery.includes('certification') || lowerQuery.includes('qualified')) {
-      return {
-        answer: "🏆 **Our Certifications & Qualifications:**\n\n**Industry Certifications:**\n✅ ISO 9001:2015 (Quality Management)\n✅ ISO 27001:2013 (Information Security)\n✅ CMMI Level 3 (Process Maturity)\n✅ SOC 2 Type II Compliance\n\n**Technology Partnerships:**\n🔹 Microsoft Gold Partner\n🔹 AWS Advanced Consulting Partner\n🔹 Google Cloud Partner\n🔹 Salesforce Certified Partner",
-        recommendations: [
-          "What is CMMI Level 3?",
-          "Tell me about your security practices",
-          "Do you have compliance expertise?"
-        ]
-      };
-    }
-
-    if (lowerQuery.includes('tech stack') || lowerQuery.includes('technology')) {
-      return {
-        answer: "💻 **Our Technology Stack:**\n\n**Frontend:**\n- React, Angular, Vue.js\n- TypeScript, JavaScript\n- HTML5, CSS3, Tailwind\n\n**Backend:**\n- Node.js, Python, Java\n- .NET Core, PHP\n- Microservices Architecture\n\n**Databases:**\n- PostgreSQL, MySQL\n- MongoDB, Redis\n- Elasticsearch\n\n**Cloud & DevOps:**\n- AWS, Azure, Google Cloud\n- Docker, Kubernetes\n- Jenkins, GitLab CI/CD",
-        recommendations: [
-          "Do you work with React?",
-          "What cloud platforms do you support?",
-          "Can you help with database design?"
-        ]
-      };
-    }
-
-    if (lowerQuery.includes('contact') || lowerQuery.includes('reach')) {
-      return {
-        answer: "📞 **Contact Hutech Solutions:**\n\n**General Inquiries:**\n📧 info@hutechsolutions.com\n☎️ +1 (555) 123-4567\n\n**Sales Team:**\n📧 sales@hutechsolutions.com\n☎️ +1 (555) 123-SALE\n\n**Support:**\n📧 support@hutechsolutions.com\n☎️ +1 (555) 123-HELP\n\n**Business Hours:**\n🕒 Monday - Friday: 9:00 AM - 6:00 PM PST\n🌍 24/7 Emergency Support Available",
-        recommendations: [
-          "How do I schedule a consultation?",
-          "What are your response times?",
-          "Do you offer 24/7 support?"
-        ]
-      };
-    }
-
-    // Default response for unmatched queries
+  // Fallback mock response in case backend is unavailable
+  const getFallbackResponse = (query: string): BotResponse => {
     return {
-      answer: `Thank you for your question: "${query}"\n\nI'd be happy to help you learn more about Hutech Solutions! We're a leading technology company specializing in custom software development, cloud solutions, and digital transformation services.\n\nOur team of 200+ experts has successfully delivered 500+ projects across 50+ countries, maintaining a 98% client satisfaction rate.\n\nHow can I assist you further?`,
+      answer: `I received your question: "${query}"\n\nI'm currently having trouble connecting to my knowledge base. Please ensure the backend server is running at http://localhost:3001/query or try again in a moment.\n\nIf you're a developer, make sure to start the backend server before using the chat functionality.`,
       recommendations: [
-        "Who is the founder/who is the CEO?",
-        "What services do we provide?",
-        "Give me your contact details.",
-        "What industries do we serve?"
+        "Check if backend server is running",
+        "Verify the API endpoint is accessible",
+        "Try your question again"
       ]
     };
   };
