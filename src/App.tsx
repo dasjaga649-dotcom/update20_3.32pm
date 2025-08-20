@@ -62,6 +62,7 @@ function App() {
   const [isSearching, setIsSearching] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [isElementsAnimating, setIsElementsAnimating] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   // Auto-scroll to bottom when new messages are added
@@ -152,12 +153,20 @@ function App() {
 
     // If on client page, trigger animated transition to chat
     if (currentPage === 'client') {
+      setIsElementsAnimating(true);
       setIsTransitioning(true);
-      // Start the page transition animation
+
+      // First phase: Animate out elements (400ms)
       setTimeout(() => {
+        // Second phase: Switch to chat mode (200ms later)
         setCurrentPage('chat');
+      }, 400);
+
+      // Third phase: Complete transition (600ms total)
+      setTimeout(() => {
         setIsTransitioning(false);
-      }, 600); // Match the CSS transition duration
+        setIsElementsAnimating(false);
+      }, 600);
     }
 
     setIsSearching(true);
@@ -258,6 +267,7 @@ function App() {
     setShowMenu(false);
     setIsSearching(false);
     setIsTransitioning(true);
+    setIsElementsAnimating(false);
     setTimeout(() => {
       setCurrentPage('client');
       setIsTransitioning(false);
@@ -298,10 +308,14 @@ function App() {
             className="nav-button chat-nav-button"
             onClick={() => {
               if (currentPage === 'client') {
+                setIsElementsAnimating(true);
                 setIsTransitioning(true);
                 setTimeout(() => {
                   setCurrentPage('chat');
+                }, 400);
+                setTimeout(() => {
                   setIsTransitioning(false);
+                  setIsElementsAnimating(false);
                 }, 600);
               }
             }}
@@ -395,14 +409,14 @@ function App() {
 
   // Main app container with transition classes
   return (
-    <div className={`app-container ${isTransitioning ? 'transitioning' : ''} ${currentPage === 'chat' ? 'chat-mode' : 'client-mode'}`}>
+    <div className={`app-container ${isTransitioning ? 'transitioning' : ''} ${isElementsAnimating ? 'elements-animating' : ''} ${currentPage === 'chat' ? 'chat-mode' : 'client-mode'}`}>
       <Navigation />
       
       {currentPage === 'client' ? (
         <div className="client-content">
           {/* Main Content */}
           <main className="client-main">
-            <div className="welcome-section">
+            <div className={`welcome-section ${isElementsAnimating ? 'animating-out' : ''}`}>
               <h1 className="welcome-title">
                 Hello, this is an <span className="ai-text">AI assistant</span>!
               </h1>
@@ -412,15 +426,20 @@ function App() {
             </div>
 
             {/* Search Bar */}
-            <SearchBar position="center" />
+            <div className={`search-bar-wrapper ${isElementsAnimating ? 'moving-down' : ''}`}>
+              <SearchBar position="center" />
+            </div>
 
             {/* Question Cards - Horizontal Scroll */}
-            <div className="question-cards-container">
+            <div className={`question-cards-container ${isElementsAnimating ? 'animating-out' : ''}`}>
               <div className="question-cards-scroll">
                 {questionCards.map((card, index) => (
                   <div
                     key={index}
-                    className="question-card-horizontal"
+                    className={`question-card-horizontal ${isElementsAnimating ? 'animating-out' : ''}`}
+                    style={{
+                      animationDelay: isElementsAnimating ? `${index * 50}ms` : '0ms'
+                    }}
                     onClick={() => handleCardClick(card)}
                   >
                     <div className="card-icon">{card.icon}</div>
@@ -436,7 +455,7 @@ function App() {
         </div>
       ) : (
         // Chat Page Content
-        <div className={`chat-content ${isSearching ? 'chat-searching' : ''}`}>
+        <div className={`chat-content ${isSearching ? 'chat-searching' : ''} ${isTransitioning ? 'entering' : ''}`}>
           {/* Chat History Panel */}
           <div id="chat-history" className="chat-history-container">
             {messages.map((message) => (
@@ -453,7 +472,7 @@ function App() {
           </div>
 
           {/* Chat Input Form with Menu - Fixed at bottom */}
-          <div className="chat-input-fixed">
+          <div className={`chat-input-fixed ${isTransitioning ? 'sliding-up' : ''}`}>
             <SearchBar position="bottom" />
           </div>
         </div>
