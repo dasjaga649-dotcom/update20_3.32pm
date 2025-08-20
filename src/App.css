@@ -243,8 +243,8 @@
           transform: translateX(2px);
         }
 
-        /* CLIENT PAGE STYLES */
-        .client-page {
+        /* APP CONTAINER AND TRANSITIONS */
+        .app-container {
           height: 100vh;
           background-color: #ffffff;
           font-family: 'Inter', sans-serif;
@@ -252,6 +252,28 @@
           display: flex;
           flex-direction: column;
           transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .app-container.transitioning {
+          pointer-events: none;
+        }
+
+        .app-container.client-mode {
+          background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+        }
+
+        .app-container.chat-mode {
+          background: #ffffff;
+        }
+
+        /* SHARED HEADER */
+        .shared-header {
+          background: white;
+          border-bottom: 1px solid #e5e7eb;
+          padding: 1rem 0;
+          flex-shrink: 0;
+          z-index: 100;
+          position: relative;
         }
 
         /* Removed all page transition animations */
@@ -270,11 +292,46 @@
           border-color: #e5e7eb;
         }
 
-        .client-header {
+        /* CLIENT CONTENT */
+        .client-content {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          opacity: 1;
+          transform: translateY(0);
+          transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .app-container.transitioning .client-content {
+          opacity: 0;
+          transform: translateY(-20px);
+        }
+
+        /* CHAT CONTENT */
+        .chat-content {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          opacity: 1;
+          transform: translateY(0);
+          transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+          padding-bottom: 6rem;
+        }
+
+        .app-container.transitioning .chat-content {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+
+        .chat-input-fixed {
+          position: fixed;
+          bottom: 0;
+          left: 0;
+          right: 0;
           background: white;
-          border-bottom: 1px solid #e5e7eb;
           padding: 1rem 0;
-          flex-shrink: 0;
+          border-top: 1px solid #e5e7eb;
+          z-index: 50;
         }
 
         .header-content {
@@ -469,16 +526,37 @@
           line-height: 1.3;
         }
 
-        .client-search-container {
+        /* SEARCH BAR ANIMATIONS */
+        .search-bar-container {
           display: flex;
           justify-content: center;
           width: 100%;
-          margin: 2rem 0 0.5rem 0;
+          transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .client-search-form {
+        .search-bar-container.center {
+          margin: 2rem 0 0.5rem 0;
+          transform: translateY(0);
+        }
+
+        .search-bar-container.bottom {
+          margin: 0;
+          transform: translateY(0);
+        }
+
+        .search-form {
+          transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .search-form.center {
           width: 50%;
           max-width: 600px;
+          min-width: 400px;
+        }
+
+        .search-form.bottom {
+          width: 50%;
+          max-width: 800px;
           min-width: 400px;
         }
 
@@ -486,30 +564,46 @@
           position: relative;
           display: flex;
           align-items: center;
+          transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .client-search-input {
+        .search-input-wrapper.center {
+          /* Client page styling */
+        }
+
+        .search-input-wrapper.bottom {
+          /* Chat page styling */
+        }
+
+        .search-input {
           width: 100%;
-          padding: 0.875rem 3.25rem 0.875rem 1.25rem;
           border: 2px solid #e5e7eb;
           border-radius: 2rem;
           background: white;
           font-size: 0.875rem;
           color: #1f2937;
-          transition: all 0.3s ease-in-out;
+          transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
           outline: none;
         }
 
-        .client-search-input:focus {
-          border-color: #2563eb;
-          box-shadow: none;
+        .search-input.center {
+          padding: 0.875rem 3.25rem 0.875rem 1.25rem;
         }
 
-        .client-search-input::placeholder {
+        .search-input.bottom {
+          padding: 0.875rem 4rem 0.875rem 1.25rem;
+        }
+
+        .search-input:focus {
+          border-color: #2563eb;
+          box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .search-input::placeholder {
           color: #9ca3af;
         }
 
-        .client-search-input.searching {
+        .search-input.searching {
           background: #f9fafb;
           cursor: not-allowed;
         }
@@ -529,7 +623,15 @@
           align-items: center;
           justify-content: center;
           cursor: pointer;
-          transition: all 0.2s ease-in-out;
+          transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .search-send-button.center {
+          /* Client page send button */
+        }
+
+        .search-send-button.bottom {
+          /* Chat page send button */
         }
 
         .search-send-button:hover:not(:disabled) {
@@ -580,50 +682,7 @@
           }
         }
 
-        /* CHAT PAGE SEARCH STYLES - 50% width */
-        .chat-search-container {
-          display: flex;
-          justify-content: center;
-          width: 100%;
-        }
-
-        .chat-search-form {
-          width: 50%;
-          max-width: 800px;
-          min-width: 400px;
-        }
-
-        .chat-input-wrapper {
-          position: relative;
-          display: flex;
-          align-items: center;
-        }
-
-        .chat-search-input {
-          width: 100%;
-          padding: 0.875rem 4rem 0.875rem 1.25rem;
-          border: 2px solid #e5e7eb;
-          border-radius: 2rem;
-          background: white;
-          font-size: 0.875rem;
-          color: #1f2937;
-          transition: all 0.3s ease-in-out;
-          outline: none;
-        }
-
-        .chat-search-input:focus {
-          border-color: #2563eb;
-          box-shadow: none;
-        }
-
-        .chat-search-input::placeholder {
-          color: #9ca3af;
-        }
-
-        .chat-search-input.searching {
-          background: #f9fafb;
-          cursor: not-allowed;
-        }
+        /* REMOVE OLD CHAT SEARCH STYLES - Now handled by unified search component */
 
         .chat-menu-button-inside {
           position: absolute;
@@ -663,38 +722,7 @@
           border-radius: 50%;
         }
 
-        .chat-send-button {
-          position: absolute;
-          right: 0.25rem;
-          top: 50%;
-          transform: translateY(-50%);
-          background: #2563eb;
-          color: white;
-          border: none;
-          width: 2.5rem;
-          height: 2.5rem;
-          border-radius: 50%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          cursor: pointer;
-          transition: all 0.2s ease-in-out;
-        }
-
-        .chat-send-button:hover:not(:disabled) {
-          background: #1d4ed8;
-          transform: translateY(-50%) scale(1.1);
-        }
-
-        .chat-send-button:disabled {
-          background: #9ca3af;
-          cursor: not-allowed;
-          transform: translateY(-50%);
-        }
-
-        .chat-send-button.searching {
-          background: #6b7280;
-        }
+        /* REMOVED - Now using unified search-send-button */
 
         .chat-menu-dropdown {
           position: absolute;
@@ -834,7 +862,7 @@
             min-width: 250px;
           }
 
-          .client-search-form {
+          .search-form.center {
             width: 70%;
             min-width: 350px;
           }
@@ -844,7 +872,7 @@
             min-width: 350px;
           }
 
-          .chat-search-form {
+          .search-form.bottom {
             width: 70%;
           }
 
@@ -886,7 +914,7 @@
             padding: 0.875rem;
           }
 
-          .client-search-form {
+          .search-form.center {
             width: 90%;
             min-width: 280px;
           }
@@ -919,12 +947,12 @@
             padding-right: 0.5rem;
           }
 
-          .chat-search-form {
+          .search-form.bottom {
             width: 90%;
             min-width: 280px;
           }
 
-          .chat-search-input {
+          .search-input.bottom {
             padding: 0.75rem 3.75rem 0.75rem 1rem;
           }
 
@@ -955,7 +983,7 @@
             padding: 1rem 0.75rem;
           }
 
-          .client-search-form {
+          .search-form.center {
             width: 95%;
             min-width: 250px;
           }
@@ -964,7 +992,7 @@
             width: 95%;
           }
 
-          .chat-search-form {
+          .search-form.bottom {
             width: 95%;
             min-width: 250px;
           }
