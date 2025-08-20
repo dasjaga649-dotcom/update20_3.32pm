@@ -489,16 +489,16 @@ function App() {
                 )}
               </div>
             ))}
-            
-            {isLoading && <LoadingMessage />}
-          </div>
 
-          {/* Chat Input Form with Menu - Fixed at bottom */}
-          <div className={`chat-input-fixed ${isTransitioning ? 'sliding-up' : ''}`}>
-            <SearchBar position="bottom" />
+            {isLoading && <LoadingMessage />}
           </div>
         </div>
       )}
+
+      {/* Chat Input Form - Always rendered but only visible in chat mode */}
+      <div className={`chat-input-fixed ${isTransitioning ? 'sliding-up' : ''}`}>
+        <SearchBar position="bottom" />
+      </div>
     </div>
   );
 }
