@@ -61,6 +61,7 @@ function App() {
   const [currentPage, setCurrentPage] = useState<'client' | 'chat'>('client');
   const [isSearching, setIsSearching] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   // Auto-scroll to bottom when new messages are added
@@ -93,91 +94,6 @@ function App() {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [showMenu]);
-
-  // Shared Search Bar Component
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const SearchBar = () => {
-    const isClientPage = currentPage === 'client';
-
-    return (
-      <div>
-        <form onSubmit={handleFormSubmit} className={isClientPage ? "client-search-form" : "chat-search-form"}>
-          <div className={isClientPage ? "search-input-wrapper" : "chat-input-wrapper"} ref={isClientPage ? null : menuRef}>
-            <input
-              type="text"
-              placeholder="🎤 Ask me anything..."
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              disabled={isLoading}
-              className={isClientPage ? "client-search-input" : `chat-search-input ${isLoading ? 'searching' : ''}`}
-            />
-
-            {!isClientPage && (
-              <>
-                {/* Three Dots Menu Inside Input */}
-                <button
-                  type="button"
-                  onClick={() => setShowMenu(!showMenu)}
-                  className="chat-menu-button-inside"
-                >
-                  <div className="three-dots-vertical">
-                    <div className="dot"></div>
-                    <div className="dot"></div>
-                    <div className="dot"></div>
-                  </div>
-                </button>
-
-                {showMenu && (
-                  <div className="chat-menu-dropdown">
-                    <button
-                      onClick={newChat}
-                      className="menu-item"
-                    >
-                      <div className="menu-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-5 h-5">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                        </svg>
-                      </div>
-                      <span>New Chat</span>
-                    </button>
-                    <button
-                      onClick={clearChat}
-                      className="menu-item"
-                    >
-                      <div className="menu-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-5 h-5">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
-                        </svg>
-                      </div>
-                      <span>Clear Chat</span>
-                    </button>
-                  </div>
-                )}
-              </>
-            )}
-
-            <button
-              type="submit"
-              className={isClientPage ? "search-send-button" : `chat-send-button ${isLoading ? 'searching' : ''}`}
-              disabled={isLoading || !inputValue.trim()}
-            >
-              {isLoading && !isClientPage ? (
-                <div className="searching-animation">
-                  <div className="dot"></div>
-                  <div className="dot"></div>
-                  <div className="dot"></div>
-                </div>
-              ) : (
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="w-5 h-5">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 713.27 20.876L5.999 12zm0 0h7.5" />
-                </svg>
-              )}
-            </button>
-          </div>
-        </form>
-      </div>
-    );
-  };
 
   const questionCards: QuestionCard[] = [
     {
@@ -234,7 +150,16 @@ function App() {
     const messageText = query || inputValue.trim();
     if (!messageText) return;
 
-    // Start chat mode on same page instead of switching pages
+    // If on client page, trigger animated transition to chat
+    if (currentPage === 'client') {
+      setIsTransitioning(true);
+      // Start the page transition animation
+      setTimeout(() => {
+        setCurrentPage('chat');
+        setIsTransitioning(false);
+      }, 600); // Match the CSS transition duration
+    }
+
     setIsSearching(true);
 
     const userMessage: Message = {
@@ -307,6 +232,7 @@ function App() {
   };
 
   const handleCardClick = (card: QuestionCard) => {
+    setInputValue(card.description);
     sendMessage(card.description);
   };
 
@@ -331,6 +257,11 @@ function App() {
     setInputValue('');
     setShowMenu(false);
     setIsSearching(false);
+    setIsTransitioning(true);
+    setTimeout(() => {
+      setCurrentPage('client');
+      setIsTransitioning(false);
+    }, 300);
     setMessages([
       {
         id: 1,
@@ -341,128 +272,63 @@ function App() {
     ]);
   };
 
-  if (currentPage === 'client') {
-    return (
-      <div className="client-page">
-        {/* Header */}
-        <header className="client-header">
-          <div className="header-content">
-            <div className="logo-section">
-              <img
-                src="https://hutechsolutions.com/wp-content/uploads/2024/08/hutech-logo-1.svg"
-                alt="Hutech Solutions"
-                className="hutech-logo"
-              />
-              <img
-                src="https://hutechsolutions.com/wp-content/uploads/2024/08/cmmi-level3-logo.svg"
-                alt="CMMI Level 3"
-                className="cmmi-logo"
-              />
-            </div>
-            <nav className="nav-menu">
-              <button className="nav-button active">Home</button>
-              <button className="nav-button">Features</button>
-              <button className="nav-button">Services</button>
-              <button className="nav-button">About</button>
-              <button className="nav-button">Contact</button>
-              <button className="nav-button chat-nav-button">💬 Chat</button>
-            </nav>
-          </div>
-        </header>
-
-        {/* Main Content */}
-        <main className="client-main">
-          <div className="welcome-section">
-            <h1 className="welcome-title">
-              Hello, this is an <span className="ai-text">AI assistant</span>!
-            </h1>
-            <p className="welcome-subtitle">
-              I will help you find answers to your questions. Here are some examples:
-            </p>
-          </div>
-
-          {/* Search Bar */}
-          <div className="client-search-container">
-            <form onSubmit={handleFormSubmit} className="client-search-form">
-              <div className="search-input-wrapper">
-                <input
-                  type="text"
-                  placeholder="🎤 Ask me anything..."
-                  value={inputValue}
-                  onChange={(e) => setInputValue(e.target.value)}
-                  className="client-search-input"
-                  disabled={false}
-                />
-                <button
-                  type="submit"
-                  className="search-send-button"
-                  disabled={!inputValue.trim()}
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="w-5 h-5">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 713.27 20.876L5.999 12zm0 0h7.5" />
-                  </svg>
-                </button>
-              </div>
-            </form>
-          </div>
-
-
-          {/* Question Cards - Horizontal Scroll */}
-          <div className="question-cards-container">
-            <div className="question-cards-scroll">
-              {questionCards.map((card, index) => (
-                <div
-                  key={index}
-                  className="question-card-horizontal"
-                  onClick={() => handleCardClick(card)}
-                >
-                  <div className="card-icon">{card.icon}</div>
-                  <div className="card-content">
-                    <h3 className="card-title">{card.title}</h3>
-                    <p className="card-description">{card.description}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </main>
+  // Shared Navigation Component
+  const Navigation = () => (
+    <header className="shared-header">
+      <div className="header-content">
+        <div className="logo-section">
+          <img
+            src="https://hutechsolutions.com/wp-content/uploads/2024/08/hutech-logo-1.svg"
+            alt="Hutech Solutions"
+            className="hutech-logo"
+          />
+          <img
+            src="https://hutechsolutions.com/wp-content/uploads/2024/08/cmmi-level3-logo.svg"
+            alt="CMMI Level 3"
+            className="cmmi-logo"
+          />
+        </div>
+        <nav className="nav-menu">
+          <button className="nav-button active">Home</button>
+          <button className="nav-button">Features</button>
+          <button className="nav-button">Services</button>
+          <button className="nav-button">About</button>
+          <button className="nav-button">Contact</button>
+          <button 
+            className="nav-button chat-nav-button"
+            onClick={() => {
+              if (currentPage === 'client') {
+                setIsTransitioning(true);
+                setTimeout(() => {
+                  setCurrentPage('chat');
+                  setIsTransitioning(false);
+                }, 600);
+              }
+            }}
+          >
+            💬 Chat
+          </button>
+        </nav>
       </div>
-    );
-  }
+    </header>
+  );
 
-  // Chat Page
-  return (
-    <div className={`bg-white body ${isSearching ? 'chat-searching' : ''}`} id='body'>
-      {/* Chat History Panel */}
-      <div id="chat-history" className="chat-history-container">
-        {messages.map((message) => (
-          <div key={message.id}>
-            {message.isUser ? (
-              <UserMessage text={message.text} />
-            ) : (
-              <BotMessage message={message} onSuggestionClick={handleSuggestionClick} />
-            )}
-          </div>
-        ))}
-        
-        {isLoading && <LoadingMessage />}
-      </div>
+  // Search Bar Component
+  const SearchBar = ({ position }: { position: 'center' | 'bottom' }) => (
+    <div className={`search-bar-container ${position}`}>
+      <form onSubmit={handleFormSubmit} className={`search-form ${position}`}>
+        <div className={`search-input-wrapper ${position}`} ref={position === 'bottom' ? menuRef : null}>
+          <input
+            type="text"
+            placeholder="🎤 Ask me anything..."
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            disabled={isLoading}
+            className={`search-input ${position} ${isLoading ? 'searching' : ''}`}
+          />
 
-      {/* Chat Input Form with Menu */}
-      <div className="sticky bottom-0 bg-white py-4">
-        <div className="chat-search-container">
-          <form id="chat-form" className="chat-search-form" onSubmit={handleFormSubmit}>
-            <div className="chat-input-wrapper" ref={menuRef}>
-              <input
-                id="user-input"
-                type="text"
-                placeholder="🎤 Ask me anything..."
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                disabled={isLoading}
-                className={`chat-search-input ${isLoading ? 'searching' : ''}`}
-              />
-
+          {position === 'bottom' && (
+            <>
               {/* Three Dots Menu Inside Input */}
               <button
                 type="button"
@@ -474,24 +340,6 @@ function App() {
                   <div className="dot"></div>
                   <div className="dot"></div>
                 </div>
-              </button>
-
-              <button
-                type="submit"
-                disabled={isLoading || !inputValue.trim()}
-                className={`chat-send-button ${isLoading ? 'searching' : ''}`}
-              >
-                {isLoading ? (
-                  <div className="searching-animation">
-                    <div className="dot"></div>
-                    <div className="dot"></div>
-                    <div className="dot"></div>
-                  </div>
-                ) : (
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="w-5 h-5">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
-                  </svg>
-                )}
               </button>
 
               {showMenu && (
@@ -514,16 +362,102 @@ function App() {
                     <div className="menu-icon">
                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-5 h-5">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
-                    </svg>
-                  </div>
-                  <span>Clear Chat</span>
-                </button>
+                      </svg>
+                    </div>
+                    <span>Clear Chat</span>
+                  </button>
+                </div>
+              )}
+            </>
+          )}
+
+          <button
+            type="submit"
+            className={`search-send-button ${position} ${isLoading ? 'searching' : ''}`}
+            disabled={isLoading || !inputValue.trim()}
+          >
+            {isLoading && position === 'bottom' ? (
+              <div className="searching-animation">
+                <div className="dot"></div>
+                <div className="dot"></div>
+                <div className="dot"></div>
               </div>
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="w-5 h-5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 713.27 20.876L5.999 12zm0 0h7.5" />
+              </svg>
             )}
-            </div>
-          </form>
+          </button>
         </div>
-      </div>
+      </form>
+    </div>
+  );
+
+  // Main app container with transition classes
+  return (
+    <div className={`app-container ${isTransitioning ? 'transitioning' : ''} ${currentPage === 'chat' ? 'chat-mode' : 'client-mode'}`}>
+      <Navigation />
+      
+      {currentPage === 'client' ? (
+        <div className="client-content">
+          {/* Main Content */}
+          <main className="client-main">
+            <div className="welcome-section">
+              <h1 className="welcome-title">
+                Hello, this is an <span className="ai-text">AI assistant</span>!
+              </h1>
+              <p className="welcome-subtitle">
+                I will help you find answers to your questions. Here are some examples:
+              </p>
+            </div>
+
+            {/* Search Bar */}
+            <SearchBar position="center" />
+
+            {/* Question Cards - Horizontal Scroll */}
+            <div className="question-cards-container">
+              <div className="question-cards-scroll">
+                {questionCards.map((card, index) => (
+                  <div
+                    key={index}
+                    className="question-card-horizontal"
+                    onClick={() => handleCardClick(card)}
+                  >
+                    <div className="card-icon">{card.icon}</div>
+                    <div className="card-content">
+                      <h3 className="card-title">{card.title}</h3>
+                      <p className="card-description">{card.description}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </main>
+        </div>
+      ) : (
+        // Chat Page Content
+        <div className={`chat-content ${isSearching ? 'chat-searching' : ''}`}>
+          {/* Chat History Panel */}
+          <div id="chat-history" className="chat-history-container">
+            {messages.map((message) => (
+              <div key={message.id}>
+                {message.isUser ? (
+                  <UserMessage text={message.text} />
+                ) : (
+                  <BotMessage message={message} onSuggestionClick={handleSuggestionClick} />
+                )}
+              </div>
+            ))}
+            
+            {isLoading && <LoadingMessage />}
+          </div>
+
+          {/* Chat Input Form with Menu - Fixed at bottom */}
+          <div className="chat-input-fixed">
+            <SearchBar position="bottom" />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
