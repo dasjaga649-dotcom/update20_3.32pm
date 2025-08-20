@@ -380,10 +380,12 @@
           opacity: 1;
           transform: translateY(0);
           transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-          padding-bottom: 6rem;
+          padding-bottom: 7rem;
           overflow-y: auto;
           overflow-x: hidden;
           max-height: calc(100vh - 140px);
+          position: relative;
+          z-index: 1;
         }
 
         .chat-content.entering {
