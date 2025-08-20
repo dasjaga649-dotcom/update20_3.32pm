@@ -13,7 +13,7 @@
         .chat-history-container {
           flex-grow: 1;
           padding-top: 2rem;
-          padding-bottom: 0;
+          padding-bottom: 2rem;
           display: flex;
           flex-direction: column;
           gap: 1.5rem;
@@ -23,6 +23,14 @@
           padding-left: 1rem;
           padding-right: 1rem;
           font-size: 0.875rem;
+          opacity: 0;
+          transform: translateY(20px);
+          transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.3s;
+        }
+
+        .app-container.chat-mode .chat-history-container {
+          opacity: 1;
+          transform: translateY(0);
         }
 
         /* Main chat history container */
@@ -264,6 +272,12 @@
 
         .app-container.chat-mode {
           background: #ffffff;
+          overflow-y: auto;
+          overflow-x: hidden;
+        }
+
+        .app-container.elements-animating {
+          pointer-events: none;
         }
 
         /* SHARED HEADER */
@@ -307,6 +321,57 @@
           transform: translateY(-20px);
         }
 
+        /* WELCOME SECTION ANIMATIONS */
+        .welcome-section {
+          opacity: 1;
+          transform: translateY(0);
+          transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .welcome-section.animating-out {
+          opacity: 0;
+          transform: translateY(-30px);
+          pointer-events: none;
+        }
+
+        /* SEARCH BAR WRAPPER ANIMATIONS */
+        .search-bar-wrapper {
+          transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+          transform: translateY(0);
+          opacity: 1;
+        }
+
+        .search-bar-wrapper.moving-down {
+          transform: translateY(200px);
+          opacity: 0.8;
+        }
+
+        /* QUESTION CARDS CONTAINER ANIMATIONS */
+        .question-cards-container {
+          opacity: 1;
+          transform: translateY(0);
+          transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .question-cards-container.animating-out {
+          opacity: 0;
+          transform: translateY(50px);
+          pointer-events: none;
+        }
+
+        /* INDIVIDUAL QUESTION CARD ANIMATIONS */
+        .question-card-horizontal {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .question-card-horizontal.animating-out {
+          opacity: 0;
+          transform: translateY(20px) scale(0.95);
+          pointer-events: none;
+        }
+
         /* CHAT CONTENT */
         .chat-content {
           flex: 1;
@@ -316,11 +381,24 @@
           transform: translateY(0);
           transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
           padding-bottom: 6rem;
+          overflow-y: auto;
+          overflow-x: hidden;
+          max-height: calc(100vh - 140px);
+        }
+
+        .chat-content.entering {
+          opacity: 0;
+          transform: translateY(30px);
         }
 
         .app-container.transitioning .chat-content {
           opacity: 0;
           transform: translateY(20px);
+        }
+
+        .app-container.chat-mode .chat-content {
+          opacity: 1;
+          transform: translateY(0);
         }
 
         .chat-input-fixed {
@@ -332,6 +410,16 @@
           padding: 1rem 0;
           border-top: 1px solid #e5e7eb;
           z-index: 50;
+          transform: translateY(100%);
+          transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .app-container.chat-mode .chat-input-fixed {
+          transform: translateY(0);
+        }
+
+        .chat-input-fixed.sliding-up {
+          transform: translateY(0);
         }
 
         .header-content {
@@ -1001,6 +1089,72 @@
         /* Smooth scrolling for the entire page */
         html {
           scroll-behavior: smooth;
+        }
+
+        /* ENHANCED ANIMATION KEYFRAMES */
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        @keyframes fadeOutDown {
+          from {
+            opacity: 1;
+            transform: translateY(0);
+          }
+          to {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+        }
+
+        @keyframes slideUp {
+          from {
+            transform: translateY(100%);
+          }
+          to {
+            transform: translateY(0);
+          }
+        }
+
+        @keyframes scaleOut {
+          from {
+            opacity: 1;
+            transform: scale(1);
+          }
+          to {
+            opacity: 0;
+            transform: scale(0.95);
+          }
+        }
+
+        /* SMOOTH SCROLLING */
+        .chat-content {
+          scroll-behavior: smooth;
+        }
+
+        .chat-content::-webkit-scrollbar {
+          width: 6px;
+        }
+
+        .chat-content::-webkit-scrollbar-track {
+          background: #f1f1f1;
+          border-radius: 3px;
+        }
+
+        .chat-content::-webkit-scrollbar-thumb {
+          background: #c1c1c1;
+          border-radius: 3px;
+        }
+
+        .chat-content::-webkit-scrollbar-thumb:hover {
+          background: #a8a8a8;
         }
 
         /* Enhanced focus states for accessibility */
