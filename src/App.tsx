@@ -156,17 +156,17 @@ function App() {
       setIsElementsAnimating(true);
       setIsTransitioning(true);
 
-      // First phase: Animate out elements (400ms)
+      // First phase: Animate out elements (800ms)
       setTimeout(() => {
-        // Second phase: Switch to chat mode (200ms later)
+        // Second phase: Switch to chat mode (400ms later)
         setCurrentPage('chat');
-      }, 400);
+      }, 800);
 
-      // Third phase: Complete transition (600ms total)
+      // Third phase: Complete transition (1200ms total)
       setTimeout(() => {
         setIsTransitioning(false);
         setIsElementsAnimating(false);
-      }, 600);
+      }, 1200);
     }
 
     setIsSearching(true);
@@ -312,11 +312,11 @@ function App() {
                 setIsTransitioning(true);
                 setTimeout(() => {
                   setCurrentPage('chat');
-                }, 400);
+                }, 800);
                 setTimeout(() => {
                   setIsTransitioning(false);
                   setIsElementsAnimating(false);
-                }, 600);
+                }, 1200);
               }
             }}
           >
@@ -438,7 +438,7 @@ function App() {
                     key={index}
                     className={`question-card-horizontal ${isElementsAnimating ? 'animating-out' : ''}`}
                     style={{
-                      animationDelay: isElementsAnimating ? `${index * 50}ms` : '0ms'
+                      animationDelay: isElementsAnimating ? `${index * 100}ms` : '0ms'
                     }}
                     onClick={() => handleCardClick(card)}
                   >
