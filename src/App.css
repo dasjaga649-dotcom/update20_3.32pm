@@ -272,8 +272,10 @@
 
         .app-container.chat-mode {
           background: #ffffff;
-          overflow-y: auto;
+          overflow-y: hidden;
           overflow-x: hidden;
+          height: 100vh;
+          position: relative;
         }
 
         .app-container.elements-animating {
