@@ -69,13 +69,19 @@ function App() {
   useEffect(() => {
     if (currentPage === 'chat') {
       const scrollToBottom = () => {
-        window.scrollTo({
-          top: document.body.scrollHeight,
-          behavior: 'smooth'
-        });
+        const chatContent = document.querySelector('.chat-content');
+        const chatHistory = document.querySelector('.chat-history-container');
+
+        if (chatContent && chatHistory) {
+          // Scroll the chat content container to show the latest message above the fixed search bar
+          chatContent.scrollTo({
+            top: chatHistory.scrollHeight,
+            behavior: 'smooth'
+          });
+        }
       };
       // Small delay to ensure DOM is updated
-      setTimeout(scrollToBottom, 100);
+      setTimeout(scrollToBottom, 150);
     }
   }, [messages, currentPage]);
 
